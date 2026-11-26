@@ -40,3 +40,7 @@ Thumbs.db
 
 # configurações locais do Claude Code
 .claude/settings.local.json
+
+# qualquer variação de arquivo de segredos
+*env.local*
+*.env

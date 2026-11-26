@@ -1,7 +1,31 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "estoque-prod", "runtimeExecutable": "npm", "runtimeArgs": ["run", "start"], "port": 3000 },
-    { "name": "estoque-dev", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 3000 }
+    {
+      "name": "estoque-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "estoque-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "configurar-chaves",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/configurar-chaves.mjs"
+      ],
+      "port": 4545
+    }
   ]
 }

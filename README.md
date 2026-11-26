@@ -234,7 +234,7 @@ Copie a linha `age1...` (chave pública) para [`backup/chave-publica-age.txt`](b
 |---|---|---|---|
 | Supabase banco | 500 MB | *Administração → Backup e plano* | O banco guarda só texto; a maior tabela é `auditoria`/`movimentacoes`. Exporte e apague auditoria antiga, ou passe para o Pro (US$ 25). |
 | Supabase pausa | 7 dias sem uso | `manter-ativo.yml` | Já automatizado. |
-| R2 armazenamento | 10 GB | *Administração → Backup e plano* | Fotos ficam com ~150–300 KB; 10 GB ≈ 40 mil fotos. Remova fotos de produtos excluídos (automático) ou pague o excedente (US$ 0,015/GB). |
+| R2 armazenamento | 10 GB | *Administração → Backup e plano* | Cada foto (principal + miniatura) fica com ~150 KB; 10 GB ≈ 70 mil fotos. Remova fotos de produtos excluídos (automático) ou pague o excedente (US$ 0,015/GB). |
 | R2 operações | 1 mi escritas / 10 mi leituras por mês | painel do R2 | Folga enorme para 3 usuários. |
 | Workers Free | 100 mil requisições/dia; Worker ≤ 3 MB; ~10 ms de CPU por requisição | painel da Cloudflare | O Worker está com ~2,1 MB. Se aparecer erro 1102 (CPU), use a Vercel em produção ou o Workers Paid (US$ 5). |
 | GitHub Actions | 2.000 min/mês (repo privado) | *Settings → Billing* | Os workflows gastam poucos minutos por dia. |
@@ -290,7 +290,7 @@ npm test
 | 2. Processamento pesado no navegador | XML, PDF, OCR, planilha, compressão de fotos e código de barras rodam no navegador; o servidor recebe dados estruturados, valida com zod e grava pelas funções do banco. |
 | 3. ≤ 50 chamadas externas por requisição | Importação, vínculos e itens de nota vão em **lotes de 25** com barra de progresso, **uma função Postgres por lote**. A maior requisição (login) faz 5 chamadas. |
 | 4. Uploads direto ao R2 | URL pré-assinada PUT (5 min, tipo e tamanho fixos); o arquivo não passa pelo Worker. |
-| 5. Imagens | `images: { unoptimized: true }`; otimização no upload (WebP 1600 px q≈80 + miniatura 400 px). |
+| 5. Imagens | `images: { unoptimized: true }`; compressão máxima no upload, no navegador: WebP até 1440 px (~120 KB) + miniatura 400 px (~30 KB), sem metadados. |
 | 6. Middleware lê `req.cookies` | `src/lib/supabase/middleware.ts` usa `req.cookies.getAll()`; nada de `cookies()` do `next/headers` no middleware. |
 | 7. Runtime Node.js padrão | Nenhuma rota usa `export const runtime = 'edge'`. |
 

@@ -62,8 +62,8 @@ for (const a of arquivos) {
     continue;
   }
   const original = readFileSync(path.join(pasta, a.arquivo));
-  const principal = await sharp(original).resize(1600, 1600, { fit: "inside" }).webp({ quality: 80 }).toBuffer();
-  const miniatura = await sharp(original).resize(400, 400, { fit: "inside" }).webp({ quality: 78 }).toBuffer();
+  const principal = await sharp(original).resize(1440, 1440, { fit: "inside" }).webp({ quality: 68, effort: 6, smartSubsample: true }).toBuffer();
+  const miniatura = await sharp(original).resize(400, 400, { fit: "inside" }).webp({ quality: 60, effort: 6, smartSubsample: true }).toBuffer();
   const id = randomUUID();
   const chave = `produtos/${p.id}/${id}.webp`;
   const chaveThumb = `produtos/${p.id}/${id}_thumb.webp`;

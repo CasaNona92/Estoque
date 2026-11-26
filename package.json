@@ -23,7 +23,8 @@
     "gerar:fotos": "node scripts/gerar-fotos-ficticias.mjs",
     "enviar:fotos": "node --env-file=.env.local scripts/enviar-fotos-seed.mjs",
     "juntar:migracoes": "node scripts/juntar-migracoes.mjs",
-    "preparar:logo": "node scripts/preparar-logo.mjs"
+    "preparar:logo": "node scripts/preparar-logo.mjs",
+    "configurar": "node scripts/configurar-chaves.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
