@@ -18,7 +18,47 @@ export function TabelaMovimentacoes({ movimentacoes, semProduto = false }: { mov
     return <EstadoVazio titulo="Nenhuma movimentação" descricao="Entradas, baixas e ajustes aparecem aqui." />;
   }
   return (
-    <div className="overflow-x-auto rounded-2xl border border-border/70 bg-card shadow-suave">
+    <>
+    {/* Celular: um cartão por movimentação, sem rolagem para o lado */}
+    <ul className="divide-y divide-border/60 overflow-hidden rounded-2xl border border-border/70 bg-card shadow-suave md:hidden">
+      {movimentacoes.map((m) => {
+        const r = ROTULOS[m.tipo];
+        const Icone = r.icone;
+        return (
+          <li key={m.id} className="space-y-1.5 px-4 py-3 text-sm">
+            <div className="flex items-center gap-2">
+              <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium text-xs", r.cor)}>
+                <Icone className="size-3" /> {r.texto}
+              </span>
+              <span className="text-muted-foreground text-xs tabular">{formatarDataHora(m.criado_em)}</span>
+              <span className={cn("ml-auto font-semibold tabular", m.quantidade > 0 ? "text-sucesso" : "text-foreground")}>
+                {m.quantidade > 0 ? "+" : "−"}
+                {formatarNumero(Math.abs(m.quantidade))}
+              </span>
+            </div>
+            {!semProduto && m.produto ? (
+              <Link href={`/produtos/${m.produto.id}`} className="block truncate font-medium hover:underline">
+                {m.produto.nome}
+              </Link>
+            ) : null}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-xs">
+              {m.cor ? (
+                <span className="inline-flex items-center gap-1.5">
+                  <BolinhaCor hex={m.cor.cor_hex} />
+                  {m.cor.nome_cor}
+                </span>
+              ) : null}
+              <span className="tabular">
+                Estoque {formatarNumero(m.estoque_antes)} → <span className="text-foreground">{formatarNumero(m.estoque_depois)}</span>
+              </span>
+              <span>{m.usuario?.nome ?? "Sistema"}</span>
+            </div>
+            {m.cliente_nome || m.observacao ? <p className="truncate text-xs">{m.cliente_nome ?? m.observacao}</p> : null}
+          </li>
+        );
+      })}
+    </ul>
+    <div className="hidden overflow-x-auto rounded-2xl border border-border/70 bg-card shadow-suave md:block">
       <table className="w-full min-w-[720px] text-sm">
         <thead className="border-border border-b text-left text-muted-foreground text-xs">
           <tr>
@@ -78,5 +118,6 @@ export function TabelaMovimentacoes({ movimentacoes, semProduto = false }: { mov
         </tbody>
       </table>
     </div>
+    </>
   );
 }

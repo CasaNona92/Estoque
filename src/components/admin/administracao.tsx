@@ -75,13 +75,13 @@ export function Administracao({
             <UsersIcon /> Usuários
           </AbaGatilho>
           <AbaGatilho value="config">
-            <SettingsIcon /> Configurações
+            <SettingsIcon /> <span className="sm:hidden">Ajustes</span><span className="hidden sm:inline">Configurações</span>
           </AbaGatilho>
           <AbaGatilho value="auditoria">
             <ScrollTextIcon /> Auditoria
           </AbaGatilho>
           <AbaGatilho value="backup">
-            <DatabaseIcon /> Backup e plano
+            <DatabaseIcon /> <span className="sm:hidden">Backup</span><span className="hidden sm:inline">Backup e plano</span>
           </AbaGatilho>
         </AbasLista>
         <AbaConteudo value="usuarios">
@@ -110,7 +110,7 @@ function Usuarios({ eu, usuarios }: { eu: string; usuarios: Usuario[] }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-muted-foreground text-sm">Não existe cadastro público: só o administrador cria contas.</p>
         <Button onClick={() => setNovo(true)}>
           <UserPlusIcon /> Novo usuário
@@ -118,8 +118,8 @@ function Usuarios({ eu, usuarios }: { eu: string; usuarios: Usuario[] }) {
       </div>
       <Card className="divide-y divide-border/60">
         {usuarios.map((u) => (
-          <div key={u.id} className={cn("flex flex-wrap items-center gap-4 px-5 py-4", !u.ativo && "opacity-60")}>
-            <div className="flex size-10 items-center justify-center rounded-full bg-accent-suave font-semibold text-accent-texto text-sm">
+          <div key={u.id} className={cn("flex items-start gap-3 px-4 py-4 sm:items-center sm:gap-4 sm:px-5", !u.ativo && "opacity-60")}>
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-suave font-semibold text-accent-texto text-sm">
               {u.nome.slice(0, 1).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
@@ -129,14 +129,14 @@ function Usuarios({ eu, usuarios }: { eu: string; usuarios: Usuario[] }) {
               <p className="text-muted-foreground text-xs">
                 <span className="font-mono">{u.usuario}</span> · desde {formatarData(u.criado_em)}
               </p>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
               <Badge variant={u.papel === "admin" ? "acento" : "neutro"}>{u.papel}</Badge>
               {u.pode_dar_entrada && u.papel !== "admin" && <Badge variant="contorno">dá entrada</Badge>}
               {!u.ativo && <Badge variant="zerado">desativado</Badge>}
               {u.precisa_trocar_senha && u.ativo && <Badge variant="baixo">troca de senha pendente</Badge>}
+              </div>
             </div>
-            <div className="flex gap-1">
+            <div className="flex shrink-0 gap-1">
               <Button size="sm" variant="ghost" onClick={() => setEditando(u)} aria-label={`Editar ${u.nome}`}>
                 <PencilIcon />
               </Button>

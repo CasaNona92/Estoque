@@ -11,7 +11,7 @@ export default async function LayoutInterno({ children }: { children: React.Reac
         podeEntrada={s.podeEntrada}
         admin={s.admin}
       />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
     </div>
   );
 }

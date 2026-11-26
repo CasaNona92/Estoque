@@ -55,20 +55,20 @@ export function Auditoria({ usuarios }: { usuarios: Array<{ id: string; nome: st
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end gap-2">
-        <Select value={filtros.usuario} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, usuario: e.target.value }); }} className="w-48" aria-label="Usuário">
+        <Select value={filtros.usuario} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, usuario: e.target.value }); }} className="w-full sm:w-48" aria-label="Usuário">
           <option value="">Todos os usuários</option>
           {usuarios.map((u) => (
             <option key={u.id} value={u.id}>{u.nome}</option>
           ))}
         </Select>
-        <Select value={filtros.tabela} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, tabela: e.target.value }); }} className="w-48" aria-label="Tabela">
+        <Select value={filtros.tabela} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, tabela: e.target.value }); }} className="w-full sm:w-48" aria-label="Tabela">
           <option value="">Todas as tabelas</option>
           {TABELAS.map((t) => (
             <option key={t} value={t}>{t}</option>
           ))}
         </Select>
-        <Input type="date" value={filtros.de} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, de: e.target.value }); }} className="w-40" aria-label="De" />
-        <Input type="date" value={filtros.ate} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, ate: e.target.value }); }} className="w-40" aria-label="Até" />
+        <Input type="date" value={filtros.de} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, de: e.target.value }); }} className="min-w-0 flex-1 sm:w-40 sm:flex-none" aria-label="De" />
+        <Input type="date" value={filtros.ate} onChange={(e) => { setPagina(0); setFiltros({ ...filtros, ate: e.target.value }); }} className="min-w-0 flex-1 sm:w-40 sm:flex-none" aria-label="Até" />
         {carregando && <LoaderCircleIcon className="mb-3 size-4 animate-spin text-muted-foreground" />}
       </div>
       {dados && dados.registros.length === 0 ? (
@@ -79,10 +79,10 @@ export function Auditoria({ usuarios }: { usuarios: Array<{ id: string; nome: st
             const lista = mudancas(r.dados_antes, r.dados_depois);
             return (
               <div key={r.id}>
-                <button type="button" onClick={() => setAberto((a) => (a === r.id ? null : r.id))} className="flex w-full items-center gap-4 px-5 py-3 text-left text-sm hover:bg-muted/40" aria-expanded={aberto === r.id}>
+                <button type="button" onClick={() => setAberto((a) => (a === r.id ? null : r.id))} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-left text-sm hover:bg-muted/40 md:flex-nowrap md:px-5" aria-expanded={aberto === r.id}>
                   <ChevronDownIcon className={cn("size-4 shrink-0 text-muted-foreground transition", aberto === r.id && "rotate-180")} />
-                  <span className="w-36 shrink-0 text-muted-foreground tabular">{formatarDataHora(r.criado_em)}</span>
-                  <span className="w-36 shrink-0 truncate">{r.usuario_id ? (nomes[r.usuario_id] ?? "usuário removido") : "sistema"}</span>
+                  <span className="shrink-0 text-muted-foreground tabular md:w-36">{formatarDataHora(r.criado_em)}</span>
+                  <span className="shrink-0 truncate md:w-36">{r.usuario_id ? (nomes[r.usuario_id] ?? "usuário removido") : "sistema"}</span>
                   <span className="font-medium">{r.acao}</span>
                   <span className="truncate text-muted-foreground">{r.tabela}</span>
                   <span className="ml-auto text-muted-foreground text-xs">{lista.length} campo(s)</span>

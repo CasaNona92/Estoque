@@ -49,7 +49,7 @@ export const Abas = TabsPrimitive.Root;
 export function AbasLista({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
-      className={cn("sem-scrollbar inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-2xl bg-muted p-1", className)}
+      className={cn("sem-scrollbar flex w-full items-center gap-1 overflow-x-auto rounded-2xl bg-muted p-1 sm:inline-flex sm:w-auto sm:max-w-full", className)}
       {...props}
     />
   );
@@ -59,7 +59,7 @@ export function AbaGatilho({ className, ...props }: React.ComponentProps<typeof 
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-xl px-4 font-medium text-muted-foreground text-sm transition-all hover:text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-suave [&_svg]:size-4",
+        "inline-flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-1 whitespace-nowrap rounded-xl px-1.5 font-medium text-muted-foreground text-xs transition-all sm:h-10 sm:flex-none sm:flex-row sm:gap-2 sm:px-4 sm:text-sm hover:text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-suave [&_svg]:size-4",
         className,
       )}
       {...props}

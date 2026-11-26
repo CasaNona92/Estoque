@@ -65,7 +65,7 @@ export function CardHistoricoBaixas({ baixas }: { baixas: Baixa[] }) {
                   ) : (
                     <span className="font-semibold text-sm tabular">−{formatarNumero(b.quantidade)}</span>
                   )}
-                  <span className="w-24 text-right text-muted-foreground text-xs tabular">{formatarQuando(b.criado_em)}</span>
+                  <span className="w-16 shrink-0 text-right text-muted-foreground text-xs tabular sm:w-24">{formatarQuando(b.criado_em)}</span>
                 </Link>
               </li>
             ))}

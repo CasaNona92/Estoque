@@ -44,11 +44,11 @@ export default async function PaginaHistorico({
           <h1 className="font-semibold text-2xl tracking-tight">Histórico</h1>
           <p className="text-muted-foreground text-sm">{formatarNumero(total)} movimentação(ões) de estoque</p>
         </div>
-        <form className="flex flex-wrap items-end gap-2" method="get">
+        <form className="flex w-full flex-wrap items-end gap-2 sm:w-auto" method="get">
           {filtros.produtoId && <input type="hidden" name="produto" value={filtros.produtoId} />}
-          <label className="grid gap-1 text-muted-foreground text-xs">
+          <label className="grid min-w-0 flex-1 gap-1 text-muted-foreground text-xs sm:flex-none">
             Tipo
-            <Select name="tipo" defaultValue={filtros.tipo ?? ""} className="w-40">
+            <Select name="tipo" defaultValue={filtros.tipo ?? ""} className="w-full sm:w-40">
               <option value="">Todos</option>
               <option value="entrada">Entradas</option>
               <option value="baixa">Baixas</option>
@@ -56,13 +56,13 @@ export default async function PaginaHistorico({
               <option value="estorno">Estornos</option>
             </Select>
           </label>
-          <label className="grid gap-1 text-muted-foreground text-xs">
+          <label className="grid min-w-0 flex-1 gap-1 text-muted-foreground text-xs sm:flex-none">
             De
-            <Input type="date" name="de" defaultValue={filtros.de ?? ""} className="w-40" />
+            <Input type="date" name="de" defaultValue={filtros.de ?? ""} className="w-full sm:w-40" />
           </label>
-          <label className="grid gap-1 text-muted-foreground text-xs">
+          <label className="grid min-w-0 flex-1 gap-1 text-muted-foreground text-xs sm:flex-none">
             Até
-            <Input type="date" name="ate" defaultValue={filtros.ate ?? ""} className="w-40" />
+            <Input type="date" name="ate" defaultValue={filtros.ate ?? ""} className="w-full sm:w-40" />
           </label>
           <Button type="submit" variant="outline">
             Filtrar

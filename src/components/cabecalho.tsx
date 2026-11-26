@@ -57,10 +57,11 @@ export function Cabecalho({
   }
 
   return (
+    <>
     <header className="sticky top-0 z-40 border-border/60 border-b bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-3 px-4 md:px-6">
+      <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-3 px-4 md:h-16 md:px-6">
         <Logo />
-        <nav aria-label="Principal" className="sem-scrollbar mx-auto flex items-center gap-1 overflow-x-auto">
+        <nav aria-label="Principal" className="sem-scrollbar mx-auto hidden items-center gap-1 overflow-x-auto md:flex">
           {itens.map((i) => {
             const ativo = i.href === "/" ? caminho === "/" : caminho.startsWith(i.href);
             const Icone = i.icone;
@@ -82,7 +83,7 @@ export function Cabecalho({
           })}
         </nav>
         <MenuSuspenso>
-          <MenuGatilho className="alvo-toque flex items-center gap-2.5 rounded-xl px-1.5 transition hover:bg-muted" aria-label="Menu do usuário">
+          <MenuGatilho className="alvo-toque ml-auto flex items-center md:ml-0 gap-2.5 rounded-xl px-1.5 transition hover:bg-muted" aria-label="Menu do usuário">
             <span className="hidden text-right leading-tight md:block">
               <span className="block font-medium text-[13px]">{nome}</span>
               <span className="block text-[11px] text-muted-foreground capitalize">{papel}</span>
@@ -122,5 +123,35 @@ export function Cabecalho({
         <form ref={formSair} action="/sair" method="post" hidden />
       </div>
     </header>
+
+    {/* Celular: menu fixo embaixo, ao alcance do polegar */}
+    <nav
+      aria-label="Principal (celular)"
+      className="fixed inset-x-0 bottom-0 z-40 border-border/60 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+    >
+      <div className="mx-auto grid max-w-lg" style={{ gridTemplateColumns: `repeat(${itens.length}, minmax(0, 1fr))` }}>
+        {itens.map((i) => {
+          const ativo = i.href === "/" ? caminho === "/" : caminho.startsWith(i.href);
+          const Icone = i.icone;
+          return (
+            <Link
+              key={i.href}
+              href={i.href}
+              aria-current={ativo ? "page" : undefined}
+              className={cn(
+                "flex h-16 flex-col items-center justify-center gap-1 font-medium text-[11px] text-muted-foreground transition-colors",
+                ativo && "text-primary",
+              )}
+            >
+              <span className={cn("flex h-7 w-12 items-center justify-center rounded-full transition-colors", ativo && "bg-primary/10")}>
+                <Icone className="size-5" aria-hidden />
+              </span>
+              {"curto" in i ? i.curto : i.rotulo}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+    </>
   );
 }

@@ -27,8 +27,8 @@ export function Entrada({ admin }: { admin: boolean }) {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-semibold text-2xl tracking-tight">Entrada de Mercadorias</h1>
-          <p className="mt-1 flex items-center gap-1.5 text-muted-foreground text-sm">
-            <InfoIcon className="size-4" />
+          <p className="mt-1 text-muted-foreground text-sm">
+            <InfoIcon className="mr-1.5 inline size-4 align-[-3px]" />
             Só para controle interno: o sistema apenas <strong className="font-medium">lê</strong> a nota recebida para somar ao estoque. Não emite nem escritura nada fiscal.
           </p>
         </div>
@@ -36,16 +36,16 @@ export function Entrada({ admin }: { admin: boolean }) {
       <Abas value={aba} onValueChange={setAba}>
         <AbasLista>
           <AbaGatilho value="xml">
-            <FileCode2Icon /> Nota XML
+            <FileCode2Icon /> <span className="sm:hidden">XML</span><span className="hidden sm:inline">Nota XML</span>
           </AbaGatilho>
           <AbaGatilho value="pdf">
-            <FileTextIcon /> Nota PDF
+            <FileTextIcon /> <span className="sm:hidden">PDF</span><span className="hidden sm:inline">Nota PDF</span>
           </AbaGatilho>
           <AbaGatilho value="bipar">
-            <ScanBarcodeIcon /> Código de barras
+            <ScanBarcodeIcon /> <span className="sm:hidden">Bipar</span><span className="hidden sm:inline">Código de barras</span>
           </AbaGatilho>
           <AbaGatilho value="notas">
-            <ReceiptTextIcon /> Notas lançadas
+            <ReceiptTextIcon /> <span className="sm:hidden">Notas</span><span className="hidden sm:inline">Notas lançadas</span>
           </AbaGatilho>
         </AbasLista>
         <AbaConteudo value="xml">

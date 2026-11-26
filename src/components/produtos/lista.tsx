@@ -137,10 +137,10 @@ export function ListaProdutos({
 
   return (
     <div className="mx-auto max-w-[1600px] px-4 pb-12 md:px-6">
-      <div className="sticky top-16 z-30 -mx-4 border-border/50 border-b bg-background/90 px-4 py-4 backdrop-blur-md md:-mx-6 md:px-6">
+      <div className="-mx-4 border-border/50 border-b bg-background/90 px-4 py-4 backdrop-blur-md md:sticky md:top-16 md:z-30 md:-mx-6 md:px-6">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="mr-2 font-semibold text-xl tracking-tight">Produtos</h1>
-          <div className="relative min-w-60 flex-1">
+          <div className="relative min-w-0 flex-1 basis-full sm:basis-auto sm:min-w-60">
             <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="search"
@@ -159,7 +159,7 @@ export function ListaProdutos({
               </button>
             ) : null}
           </div>
-          <Select value={filtros.categoria} onChange={(e) => mudar("categoria", e.target.value)} aria-label="Categoria" className="w-auto min-w-40">
+          <Select value={filtros.categoria} onChange={(e) => mudar("categoria", e.target.value)} aria-label="Categoria" className="min-w-[9.5rem] flex-1 sm:w-auto sm:flex-none sm:min-w-40">
             <option value="">Todas as categorias</option>
             {categorias.map((c) => (
               <option key={c} value={c}>
@@ -167,7 +167,7 @@ export function ListaProdutos({
               </option>
             ))}
           </Select>
-          <Select value={filtros.cor} onChange={(e) => mudar("cor", e.target.value)} aria-label="Cor" className="w-auto min-w-36">
+          <Select value={filtros.cor} onChange={(e) => mudar("cor", e.target.value)} aria-label="Cor" className="min-w-[9.5rem] flex-1 sm:w-auto sm:flex-none sm:min-w-36">
             <option value="">Todas as cores</option>
             {cores.map((c) => (
               <option key={c.nome_cor} value={c.nome_cor}>
@@ -175,7 +175,7 @@ export function ListaProdutos({
               </option>
             ))}
           </Select>
-          <Select value={filtros.filtro} onChange={(e) => mudar("filtro", e.target.value)} aria-label="Situação do estoque" className="w-auto min-w-44">
+          <Select value={filtros.filtro} onChange={(e) => mudar("filtro", e.target.value)} aria-label="Situação do estoque" className="min-w-[9.5rem] flex-1 sm:w-auto sm:flex-none sm:min-w-44">
             <option value="">Qualquer estoque</option>
             <option value="sem_estoque">Sem estoque</option>
             <option value="abaixo_minimo">Abaixo do mínimo</option>

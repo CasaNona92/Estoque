@@ -144,7 +144,7 @@ Esse comando faz o build, **confere que o Worker tem menos de 3 MB (gzip)** e pu
 
 O build (`scripts/build-cloudflare.mjs`) tira o `.env.local` do caminho enquanto compila, porque o adaptador copiaria esses valores para dentro do Worker. No fim, ele procura cada chave secreta nos arquivos gerados e **cancela a publicação** se achar alguma. Em produção, os segredos ficam só no `wrangler secret`.
 
-Endereço atual: **https://estoque-casa-da-nona.casanona9273.workers.dev**
+Endereço atual: **https://estoque.casadanona.workers.dev** (no celular: Chrome → ⋮ → “Adicionar à tela inicial” para virar um ícone de app)
 
 ---
 

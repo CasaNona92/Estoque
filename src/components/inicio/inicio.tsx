@@ -102,11 +102,11 @@ export function Inicio({
   const transicao = reduzir ? { duration: 0 } : { type: "tween" as const, ease: [0.22, 1, 0.36, 1] as const, duration: 0.26 };
 
   return (
-    <div className="relative mx-auto flex min-h-[calc(100dvh-4rem)] max-w-[1600px] flex-col px-4 pb-8 md:px-6">
+    <div className="relative mx-auto flex min-h-[calc(100dvh-7.5rem)] max-w-[1600px] md:min-h-[calc(100dvh-4rem)] flex-col px-4 pb-8 md:px-6">
       <motion.section
         layout
         transition={transicao}
-        className={cn("mx-auto w-full max-w-3xl", ativo ? "pt-6" : "flex flex-1 flex-col justify-center pb-[12vh]")}
+        className={cn("mx-auto w-full max-w-3xl", ativo ? "pt-6" : "flex flex-1 flex-col justify-center pt-8 pb-10 md:pt-0 md:pb-[12vh]")}
       >
         <AnimatePresence initial={false}>
           {!ativo && (
@@ -117,7 +117,7 @@ export function Inicio({
               exit={{ opacity: 0, y: -6, transition: { duration: 0.12 } }}
               className="mb-7 text-center"
             >
-              <h1 className="font-serif text-4xl tracking-tight md:text-5xl">O que o cliente procura?</h1>
+              <h1 className="font-serif text-3xl tracking-tight sm:text-4xl md:text-5xl">O que o cliente procura?</h1>
               <p className="mt-2 text-muted-foreground">Nome, código, cor, medida ou bipe o código de barras.</p>
             </motion.div>
           )}
@@ -227,7 +227,7 @@ export function Inicio({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0, transition: { delay: 0.05 } }}
             exit={{ opacity: 0, y: 12, transition: { duration: 0.12 } }}
-            className="grid gap-4 md:grid-cols-2 lg:gap-6"
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6"
           >
             <CardHistoricoBaixas baixas={baixas} />
             <CardMaisVendidos inicial={maisVendidos} />
