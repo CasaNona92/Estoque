@@ -2461,3 +2461,20 @@ $$;
 revoke execute on function public.sistema_instalado(), public.instalar_primeiro_admin(uuid, text, text) from public, anon, authenticated;
 grant execute on function public.sistema_instalado(), public.instalar_primeiro_admin(uuid, text, text) to service_role;
 
+
+-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> 20261125000010_service_role.sql
+-- =====================================================================
+-- 0010 — Permissões explícitas da service_role (usada SÓ pelo servidor:
+--        login, criação de usuários, rotinas). Projetos Supabase criados com
+--        "Grant API access to new tables automatically" desligado não dão
+--        essas permissões sozinhos.
+-- =====================================================================
+grant usage on schema public to service_role;
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;
+grant execute on all functions in schema public to service_role;
+
+alter default privileges in schema public grant all on tables to service_role;
+alter default privileges in schema public grant all on sequences to service_role;
+alter default privileges in schema public grant execute on functions to service_role;
+
