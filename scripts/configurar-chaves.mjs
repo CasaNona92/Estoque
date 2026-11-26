@@ -17,25 +17,25 @@ const CAMPOS = [
     nome: "SUPABASE_ANON_KEY",
     rotulo: "Supabase — Publishable key",
     onde: "Supabase → Project Settings → API Keys → “Publishable key” (começa com sb_publishable_). Clique no ícone de copiar.",
-    padrao: "^(sb_publishable_\\S{10,}|eyJ\\S{40,})$",
+    padrao: "^\\S{20,}$",
   },
   {
     nome: "SUPABASE_SERVICE_ROLE_KEY",
     rotulo: "Supabase — Secret key",
     onde: "Mesma página, “Secret keys” → linha default → clique no olho para revelar e copie (começa com sb_secret_).",
-    padrao: "^(sb_secret_\\S{10,}|eyJ\\S{40,})$",
+    padrao: "^\\S{20,}$",
   },
   {
     nome: "R2_ACCESS_KEY_ID",
     rotulo: "Cloudflare R2 — Access Key ID",
     onde: "Tela do token criado no Cloudflare → “Access Key ID” (32 letras/números).",
-    padrao: "^[a-f0-9]{32}$",
+    padrao: "^[A-Za-z0-9]{20,}$",
   },
   {
     nome: "R2_SECRET_ACCESS_KEY",
     rotulo: "Cloudflare R2 — Secret Access Key",
     onde: "Mesma tela → “Secret Access Key” (64 letras/números).",
-    padrao: "^[a-f0-9]{64}$",
+    padrao: "^[A-Za-z0-9]{40,}$",
   },
   {
     nome: "CODIGO_INSTALACAO",
@@ -73,7 +73,7 @@ function pagina(mensagem = "", erro = false) {
     const preenchido = Boolean(atual[c.nome]);
     return `<label>
       <span class="rotulo">${esc(c.rotulo)} ${preenchido ? '<b class="ok">já preenchido</b>' : '<b class="falta">falta</b>'}</span>
-      <input name="${c.nome}" type="password" autocomplete="off" spellcheck="false" pattern="${esc(c.padrao)}"
+      <input name="${c.nome}" type="password" autocomplete="off" spellcheck="false"
         placeholder="${preenchido ? "deixe em branco para manter o atual" : "cole aqui"}">
       <small>${esc(c.onde)}</small>
     </label>`;
@@ -130,7 +130,7 @@ const servidor = createServer((req, res) => {
       const novos = {};
       const erros = [];
       for (const c of CAMPOS) {
-        const valor = (dados.get(c.nome) ?? "").trim().replace(/^['"]|['"]$/g, "");
+        const valor = (dados.get(c.nome) ?? "").replace(/\s+/g, "").replace(/^['"]|['"]$/g, "");
         if (!valor) continue;
         if (!new RegExp(c.padrao).test(valor)) erros.push(c.rotulo);
         else novos[c.nome] = valor;

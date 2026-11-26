@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   // Produção no Cloudflare Workers (plano Free). Os segredos NÃO ficam aqui:
   // use `npx wrangler secret put NOME` (veja o README).
-  "name": "estoque-moveis",
+  "name": "estoque-casa-da-nona",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
