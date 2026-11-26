@@ -1,0 +1,104 @@
+name: Backup do banco
+
+# Todo dia às 02:00 de Brasília (05:00 UTC). Se falhar, o GitHub avisa por e-mail.
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-banco
+  cancel-in-progress: false
+
+env:
+  PG_VERSAO: "18"
+  BUCKET: estoque-backups
+  AWS_DEFAULT_REGION: auto
+  AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+  AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # Connection string do "Session pooler" (IPv4) do Supabase
+      PGURL: ${{ secrets.SUPABASE_DB_URL }}
+      # Chaves PRÓPRIAS do bucket estoque-backups (não são as do app)
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+      R2_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir a chave pública do age
+        run: |
+          if ! grep -q '^age1' backup/chave-publica-age.txt; then
+            echo "::error::Cole a chave pública do age em backup/chave-publica-age.txt (veja o README)."
+            exit 1
+          fi
+
+      - name: Instalar cliente PostgreSQL e age
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq "postgresql-client-${PG_VERSAO}" age
+          echo "/usr/lib/postgresql/${PG_VERSAO}/bin" >> "$GITHUB_PATH"
+
+      - name: pg_dump + compactar + criptografar (age)
+        run: |
+          set -euo pipefail
+          NOME="estoque-$(date -u +%Y-%m-%d)"
+          mkdir -p tmp
+          pg_dump "$PGURL" --format=custom --compress=9 --no-owner --no-privileges \
+            --schema=public --schema=auth -f "tmp/${NOME}.dump"
+          psql "$PGURL" -At -f scripts/manifesto-backup.sql > "tmp/${NOME}.manifesto.json"
+          tar -C tmp -czf "tmp/${NOME}.tar.gz" "${NOME}.dump" "${NOME}.manifesto.json"
+          grep '^age1' backup/chave-publica-age.txt > tmp/destinatario.txt
+          age -R tmp/destinatario.txt -o "tmp/${NOME}.tar.gz.age" "tmp/${NOME}.tar.gz"
+          rm -f "tmp/${NOME}.dump" "tmp/${NOME}.tar.gz"
+          echo "NOME=${NOME}" >> "$GITHUB_ENV"
+          ls -la tmp
+
+      - name: Enviar para o R2 (diário / semanal / mensal)
+        run: |
+          set -euo pipefail
+          ARQ="tmp/${NOME}.tar.gz.age"
+          aws s3 cp "$ARQ" "s3://${BUCKET}/diario/${NOME}.tar.gz.age" --endpoint-url "$R2_ENDPOINT" --only-show-errors
+          if [ "$(date -u +%u)" = "7" ]; then
+            aws s3 cp "$ARQ" "s3://${BUCKET}/semanal/${NOME}.tar.gz.age" --endpoint-url "$R2_ENDPOINT" --only-show-errors
+          fi
+          if [ "$(date -u +%d)" = "01" ]; then
+            aws s3 cp "$ARQ" "s3://${BUCKET}/mensal/${NOME}.tar.gz.age" --endpoint-url "$R2_ENDPOINT" --only-show-errors
+          fi
+
+      - name: Retenção (7 diários, 8 semanais, 12 mensais)
+        run: |
+          set -euo pipefail
+          reter() {
+            aws s3api list-objects-v2 --bucket "$BUCKET" --prefix "$1" --endpoint-url "$R2_ENDPOINT" \
+              --query 'Contents[].Key' --output text | tr '\t' '\n' | grep -v '^None$' | grep . | sort -r \
+              | tail -n +$(( $2 + 1 )) | while read -r chave; do
+                  echo "apagando ${chave}"
+                  aws s3 rm "s3://${BUCKET}/${chave}" --endpoint-url "$R2_ENDPOINT" --only-show-errors
+                done
+          }
+          reter diario/ 7
+          reter semanal/ 8
+          reter mensal/ 12
+
+      - name: Registrar no sistema (tela de Administração)
+        run: |
+          set -euo pipefail
+          TAM=$(aws s3 ls "s3://${BUCKET}" --recursive --summarize --endpoint-url "$R2_ENDPOINT" | awk '/Total Size/ {print $3}')
+          psql "$PGURL" -v ON_ERROR_STOP=1 -q -v tamanho="${TAM:-0}" -f scripts/registrar-backup.sql
+
+      - name: Registrar falha
+        if: failure()
+        run: |
+          psql "$PGURL" -q -c "select public.registrar_status('ultimo_backup_erro', 'Falhou em ' || to_char(now() at time zone 'America/Sao_Paulo', 'DD/MM/YYYY HH24:MI'))" || true

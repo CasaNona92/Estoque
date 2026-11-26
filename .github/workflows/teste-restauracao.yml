@@ -1,0 +1,103 @@
+name: Teste de restauração do backup
+
+# Rodado à mão (Actions → Teste de restauração do backup → Run workflow).
+# Baixa o último backup, descriptografa e restaura num Postgres temporário do próprio
+# Actions, conferindo as contagens com o manifesto — prova que o backup funciona.
+#
+# A chave privada do age fica com o dono. Para este teste, crie o secret
+# AGE_CHAVE_PRIVADA_TESTE na hora, rode, e APAGUE o secret depois.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PG_VERSAO: "18"
+  BUCKET: estoque-backups
+  AWS_DEFAULT_REGION: auto
+  AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+  AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+
+jobs:
+  restaurar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: teste
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+      R2_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      PGPASSWORD: teste
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar cliente PostgreSQL e age
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq "postgresql-client-${PG_VERSAO}" age jq
+          echo "/usr/lib/postgresql/${PG_VERSAO}/bin" >> "$GITHUB_PATH"
+
+      - name: Baixar o backup mais recente
+        run: |
+          set -euo pipefail
+          CHAVE=$(aws s3api list-objects-v2 --bucket "$BUCKET" --prefix diario/ --endpoint-url "$R2_ENDPOINT" \
+            --query 'Contents[].Key' --output text | tr '\t' '\n' | grep -v '^None$' | grep . | sort -r | head -1)
+          echo "Último backup: ${CHAVE}"
+          aws s3 cp "s3://${BUCKET}/${CHAVE}" backup.tar.gz.age --endpoint-url "$R2_ENDPOINT" --only-show-errors
+
+      - name: Descriptografar
+        env:
+          CHAVE_AGE: ${{ secrets.AGE_CHAVE_PRIVADA_TESTE }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CHAVE_AGE" ]; then
+            echo "::error::Crie o secret AGE_CHAVE_PRIVADA_TESTE só para este teste (e apague depois)."
+            exit 1
+          fi
+          umask 077
+          printf '%s\n' "$CHAVE_AGE" > chave.txt
+          age -d -i chave.txt -o backup.tar.gz backup.tar.gz.age
+          shred -u chave.txt
+          tar xzf backup.tar.gz
+          ls -la
+
+      - name: Restaurar num Postgres temporário
+        run: |
+          set -euo pipefail
+          psql -h localhost -U postgres -q -c "create database restaurado"
+          psql -h localhost -U postgres -d restaurado -q -f scripts/preparar-restauracao.sql
+          # objetos internos do Supabase podem gerar avisos; o que importa é que os DADOS
+          # do app voltem — conferido no próximo passo.
+          pg_restore -h localhost -U postgres -d restaurado --no-owner --no-privileges estoque-*.dump 2> restore.log || true
+          tail -n 30 restore.log || true
+
+      - name: Conferir com o manifesto
+        run: |
+          set -euo pipefail
+          M=$(ls estoque-*.manifesto.json)
+          cat "$M"
+          q() { psql -h localhost -U postgres -d restaurado -At -c "$1"; }
+          falhou=0
+          conferir() {
+            esperado=$(jq -r ".$1" "$M")
+            real=$(q "$2")
+            echo "$1: esperado=${esperado} restaurado=${real}"
+            if [ "$esperado" != "$real" ]; then echo "::error::$1 não confere"; falhou=1; fi
+          }
+          conferir produtos "select count(*) from public.produtos"
+          conferir cores "select count(*) from public.produto_cores"
+          conferir movimentacoes "select count(*) from public.movimentacoes"
+          conferir estoque_total "select coalesce(sum(estoque), 0) from public.produto_cores"
+          if [ "$falhou" = "1" ]; then exit 1; fi
+          echo "Backup restaurado e conferido com sucesso."

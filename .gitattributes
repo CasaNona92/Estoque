@@ -1,0 +1,15 @@
+# Texto sempre com LF no repositório (o CI roda em Linux)
+* text=auto eol=lf
+
+# Scripts do Windows precisam de CRLF
+*.bat text eol=crlf
+
+# Binários: nunca converter
+*.pdf binary
+*.xlsx binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.zip binary

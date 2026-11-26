@@ -1,0 +1,42 @@
+# dependências
+node_modules/
+
+# builds
+.next/
+out/
+.open-next/
+.wrangler/
+.vercel/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# segredos — NUNCA versionar
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+*.age.key
+chave-privada*.txt
+
+# testes
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/coverage/
+
+# fotos fictícias geradas localmente (regenerar com npm run gerar:fotos)
+/seed/fotos/
+
+# sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# workers copiados no npm install (postinstall)
+/public/vendor/
+
+# configurações locais do Claude Code
+.claude/settings.local.json

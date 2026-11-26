@@ -1,0 +1,9 @@
+[
+  {
+    "AllowedOrigins": ["https://SEU-DOMINIO-CLOUDFLARE.workers.dev", "https://SEU-PROJETO.vercel.app", "http://localhost:3000"],
+    "AllowedMethods": ["GET", "PUT", "HEAD"],
+    "AllowedHeaders": ["content-type", "cache-control"],
+    "ExposeHeaders": ["etag", "content-length", "content-range"],
+    "MaxAgeSeconds": 3600
+  }
+]

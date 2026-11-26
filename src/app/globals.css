@@ -1,0 +1,165 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------
+   Paleta da Casa da Nona (a partir do logo)
+   off-white #F7F5F2 · superfícies brancas · grafite #2B2A28 · cinzas quentes
+   azul da marca #0153E0 (ações principais) · laranja da marca #FE8F01 (acento)
+   verde/âmbar/vermelho só para status
+   ------------------------------------------------------------------ */
+:root {
+  --background: #f7f6f3;
+  --foreground: #23262e;
+  --card: #ffffff;
+  --card-foreground: #23262e;
+  --popover: #ffffff;
+  --popover-foreground: #23262e;
+  --primary: #0a47c9;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1f7;
+  --secondary-foreground: #23262e;
+  --muted: #efeee9;
+  --muted-foreground: #646872;
+  --accent: #fe8f01;
+  --accent-foreground: #1f1a12;
+  --accent-texto: #b45309;
+  --accent-suave: #fff1df;
+  --marca-azul: #0153e0;
+  --marca-azul-escuro: #06308c;
+  --marca-laranja: #fe8f01;
+  --border: #e3e2dd;
+  --input: #d8d7d1;
+  --ring: #0a47c9;
+  --sucesso: #2f7d52;
+  --sucesso-suave: #e3f1e8;
+  --alerta: #a86b0c;
+  --alerta-suave: #fbefd9;
+  --perigo: #b83a32;
+  --perigo-suave: #f9e3e1;
+  --radius: 14px;
+  --sombra-suave: 0 1px 2px rgb(43 42 40 / 0.04), 0 8px 24px -12px rgb(43 42 40 / 0.12);
+  --sombra-media: 0 2px 6px rgb(43 42 40 / 0.05), 0 18px 40px -18px rgb(43 42 40 / 0.22);
+}
+
+.dark {
+  --background: #12141a;
+  --foreground: #eef0f5;
+  --card: #1a1d25;
+  --card-foreground: #eef0f5;
+  --popover: #1a1d25;
+  --popover-foreground: #eef0f5;
+  --primary: #4f86ff;
+  --primary-foreground: #0b1226;
+  --secondary: #252a36;
+  --secondary-foreground: #eef0f5;
+  --muted: #252a36;
+  --muted-foreground: #a3a9b8;
+  --accent: #ffa43a;
+  --accent-foreground: #1f1a12;
+  --accent-texto: #ffb35c;
+  --accent-suave: #3a2a14;
+  --marca-azul: #3b7bff;
+  --marca-azul-escuro: #0b2a6e;
+  --marca-laranja: #ffa43a;
+  --border: #2e3340;
+  --input: #383e4d;
+  --ring: #4f86ff;
+  --sucesso: #5cbf87;
+  --sucesso-suave: #1c3326;
+  --alerta: #e0a84a;
+  --alerta-suave: #3a2c14;
+  --perigo: #ec7b72;
+  --perigo-suave: #3d1f1c;
+  --sombra-suave: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --sombra-media: 0 2px 6px rgb(0 0 0 / 0.35), 0 18px 40px -18px rgb(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-texto: var(--accent-texto);
+  --color-accent-suave: var(--accent-suave);
+  --color-marca-azul: var(--marca-azul);
+  --color-marca-azul-escuro: var(--marca-azul-escuro);
+  --color-marca-laranja: var(--marca-laranja);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sucesso: var(--sucesso);
+  --color-sucesso-suave: var(--sucesso-suave);
+  --color-alerta: var(--alerta);
+  --color-alerta-suave: var(--alerta-suave);
+  --color-perigo: var(--perigo);
+  --color-perigo-suave: var(--perigo-suave);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --shadow-suave: var(--sombra-suave);
+  --shadow-media: var(--sombra-media);
+  --font-sans: var(--fonte-ui), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--fonte-serif), ui-serif, Georgia, serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  /* foco sempre visível (acessibilidade) */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--accent-suave);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .sem-scrollbar {
+    scrollbar-width: none;
+  }
+  .sem-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .alvo-toque {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

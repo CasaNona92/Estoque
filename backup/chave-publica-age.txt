@@ -1,0 +1,6 @@
+# Cole aqui a CHAVE PÚBLICA do age (linha que começa com "age1...").
+# Gere o par no SEU computador (a chave privada NUNCA vai para o GitHub):
+#   winget install FiloSottile.age      (ou baixe em https://github.com/FiloSottile/age/releases)
+#   age-keygen -o chave-privada-backup.txt
+# O comando mostra "Public key: age1..." — copie essa linha para cá.
+# Guarde chave-privada-backup.txt num pendrive/cofre: sem ela os backups não abrem.

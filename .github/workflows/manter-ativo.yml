@@ -1,0 +1,30 @@
+name: Manter o Supabase ativo
+
+# A cada 3 dias: uma consulta leve para o projeto Free não pausar (feriados, férias).
+on:
+  schedule:
+    - cron: "0 12 */3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Consulta leve no banco
+        env:
+          PGURL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          sudo apt-get install -y -qq postgresql-client > /dev/null
+          psql "$PGURL" -At -c "select count(*) from public.produtos where ativo"
+      - name: Chamada à API (health do Auth)
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          CHAVE: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -n "$URL" ] && [ -n "$CHAVE" ]; then
+            curl -fsS -o /dev/null -w "%{http_code}\n" -H "apikey: ${CHAVE}" "${URL}/auth/v1/health"
+          fi

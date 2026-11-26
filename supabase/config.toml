@@ -1,0 +1,27 @@
+# Configuração para o Supabase CLI (opcional: `npx supabase start` para rodar local com Docker).
+# No projeto na nuvem, desative o cadastro em Authentication → Sign In / Providers →
+# "Allow new users to sign up" = OFF.
+project_id = "estoque-moveis"
+
+[api]
+schemas = ["public"]
+max_rows = 1000
+
+[db]
+major_version = 17
+
+[auth]
+site_url = "http://localhost:3000"
+# Não existe cadastro público: só o administrador cria contas.
+enable_signup = false
+minimum_password_length = 10
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+
+[auth.email]
+enable_signup = false
+enable_confirmations = false
+
+[storage]
+# Arquivos ficam no Cloudflare R2, não no Supabase.
+enabled = false
